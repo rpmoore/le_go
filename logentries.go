@@ -1,6 +1,7 @@
 package logentries
 
 import (
+	"crypto/tls"
 	"io"
 	"net"
 )
@@ -12,14 +13,18 @@ type logEntriesWriter struct {
 
 func NewLogEntriesWriter(token string, secure bool) (io.Writer, error) {
 	var outputStream net.Conn
-	/*
-		if secure {
-			outputStream = tls.Dial("tcp", endpoint)
+	var err error
+	if secure {
+		config := tls.Config{}
+		outputStream, err = tls.Dial("tcp", "api.logentries.com:20000", &config)
+		if err != nil {
+			return nil, err
 		}
-	*/
-	outputStream, err := net.Dial("tcp", "data.logentries.com:80")
-	if err != nil {
-		return nil, err
+	} else {
+		outputStream, err = net.Dial("tcp", "data.logentries.com:80")
+		if err != nil {
+			return nil, err
+		}
 	}
 	return &logEntriesWriter{token, outputStream}, nil
 }
