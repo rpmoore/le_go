@@ -7,7 +7,7 @@ le_go
 
 ## Usage
 
-To send data to Log Entries from Golang you create an instance of the client which implements the [Writer](http://golang.org/pkg/io/#Writer) interface.  This allows you to pass the client to the built in Golang [Logger](http://golang.org/pkg/log/#New).  Here is a concret example of creating the client and then using it in a Logger.
+To send data to [Log Entries](https://logentries.com/) from Golang you create an instance of the client which implements the [Writer](http://golang.org/pkg/io/#Writer) interface.  This allows you to pass the client to the built in Golang [Logger](http://golang.org/pkg/log/#New).  Here is a concret example of creating the client and then using it in a Logger.
 
 ```go
 
@@ -21,7 +21,7 @@ import (
 
 func main() {
     // If you want to send your log data via SSL replace false with true
-    le, err := logentries.NewLogEntriesWriter("token", false)
+    le, err := logentries.NewLogEntriesWriter("<replace_with_your_le_token>", false)
 
     if err != nil {
         log.Fatal(err)
