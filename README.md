@@ -15,13 +15,16 @@ package main
 
 import (
     "log"
+    "os"
 
     "github.com/rpmoore/le_go"
 )
 
 func main() {
     // If you want to send your log data via SSL replace false with true
-    le, err := logentries.NewLogEntriesWriter("<replace_with_your_le_token>", false)
+    // Replace os.Stdout with nil if you do not want the logger to write to stdout.
+    // You could replace os.Stdout with a io.Writer to a file if you wish to also keep a local log file.
+    le, err := logentries.NewLogEntriesWriter("<replace_with_your_le_token>", false, os.Stdout)
 
     if err != nil {
         log.Fatal(err)

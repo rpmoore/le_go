@@ -7,11 +7,18 @@ import (
 )
 
 type logEntriesWriter struct {
-	token        string
-	outputStream io.Writer
+	token         string
+	outputStream  io.Writer
+	wrappedStream io.Writer
 }
 
-func NewLogEntriesWriter(token string, secure bool) (io.Writer, error) {
+// NewLogEntriesWriter creates a new io.Writer which can then be wrapped in a Logger.
+// You do not have to use it within a Logger, but that is the intended method.
+// You must pass in the token and secure parameters.
+// You can optionally pass in wrappedStream which will, in addition to writting to Log Entries, also have data written to it.
+// This allows you to log to the console while still logging to Log Entries.
+// If you do not wish to use wrappedStream, pass in nil.
+func NewLogEntriesWriter(token string, secure bool, wrappedStream io.Writer) (io.Writer, error) {
 	var outputStream net.Conn
 	var err error
 	if secure {
@@ -26,7 +33,7 @@ func NewLogEntriesWriter(token string, secure bool) (io.Writer, error) {
 			return nil, err
 		}
 	}
-	return &logEntriesWriter{token, outputStream}, nil
+	return &logEntriesWriter{token, outputStream, wrappedStream}, nil
 }
 
 func (l *logEntriesWriter) Write(p []byte) (int, error) {
@@ -38,6 +45,12 @@ func (l *logEntriesWriter) Write(p []byte) (int, error) {
 	count, err := l.outputStream.Write(p)
 	if err != nil {
 		return count, err
+	}
+	if l.wrappedStream != nil {
+		count, err := l.wrappedStream.Write(p)
+		if err != nil {
+			return count, err
+		}
 	}
 	return count, nil
 }
